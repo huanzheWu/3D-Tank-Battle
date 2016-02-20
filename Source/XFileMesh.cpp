@@ -1,11 +1,10 @@
 #include"XFileMesh.h"
 #include<d3dx9.h>
-#include<D3DX10math.h>
-
 //构造函数
 XFileMesh::XFileMesh(LPDIRECT3DDEVICE9 _Device)
 {
 	Device=_Device;
+
 }
 //初始化函数
 void XFileMesh::InitXfile(LPCTSTR pFilename)
@@ -21,6 +20,7 @@ void XFileMesh::InitXfile(LPCTSTR pFilename)
 		&pNumMaterials,//返回网格中的材质数目
 		&SourceMesh//返回所创建的并已填充好XFile几何数据的ID3DXMesh对象
 		);
+
 	//检测载入的XFile中是否含有顶点法线信息。
 	if(!SourceMesh->GetFVF ()&D3DFVF_NORMAL)
 	{
@@ -50,6 +50,7 @@ void XFileMesh::InitXfile(LPCTSTR pFilename)
            g_pTextures[i]  = NULL;  
            D3DXCreateTextureFromFileA(Device,pMtrls[i].pTextureFilename, &g_pTextures[i]);  
       }  
+
 	//进行网格优化
 		SourceMesh->OptimizeInplace(
 		D3DXMESHOPT_COMPACT |D3DXMESHOPT_VERTEXCACHE|D3DXMESHOPT_ATTRSORT ,
@@ -58,25 +59,22 @@ void XFileMesh::InitXfile(LPCTSTR pFilename)
 		NULL,
 		NULL
 		);
-		ppAdjacency->Release ();
-		ppMaterials->Release ();
+	ppAdjacency->Release ();
+    ppMaterials->Release ();
 }
 
 //渲染函数
-
 void XFileMesh::RenderXfile()
 {
 	 for(DWORD i = 0; i < pNumMaterials; i++)  
       {  
 			Device->SetMaterial(&g_pMaterials[i]);  
-			Device->SetTexture(0,g_pTextures[i]);  
+		///*	Device->SetTexture(0,g_pTextures[i]);  */
 			SourceMesh->DrawSubset(i);  
-      } 
+      }  
 }
-
-
 //析构函数
 XFileMesh::~XFileMesh()
 {
-
+	SourceMesh->Release ();
 }

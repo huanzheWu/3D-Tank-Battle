@@ -101,12 +101,16 @@ void SkyBox::RenderSkyBox()
 	Device->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);  //将纹理颜色混合的第一个参数的颜色值用于输出  
     Device->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );   //纹理颜色混合的第一个参数的值就取纹理颜色值  
 
+
+	//Device->SetRenderState (D3DRS_ALPHABLENDENABLE,true);//开启融合
+	//Device->SetRenderState (D3DRS_SRCBLEND,D3DBLEND_ZERO);
+	//Device->SetRenderState (D3DRS_DESTBLEND,D3DBLEND_ONE);
 	//设置纹理夹取寻址模式
 	Device->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
     Device->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
 
 	D3DXMATRIX matSky,matTransSky,matRotSky;  
-	D3DXMatrixTranslation(&matTransSky,0.0f,-15000.0f,0.0f);  
+	D3DXMatrixTranslation(&matTransSky,0.0f,-5000.0f,0.0f);  
     D3DXMatrixRotationY(&matRotSky, -0.000005f*timeGetTime());   //旋转天空网格, 简单模拟云彩运动效果  
     matSky=matTransSky*matRotSky;  
 
@@ -122,6 +126,7 @@ void SkyBox::RenderSkyBox()
        Device->DrawPrimitive(D3DPT_TRIANGLESTRIP, i*4, 2);  
     }  
 	Device->SetRenderState (D3DRS_LIGHTING,true);
+	//Device->SetRenderState (D3DRS_ALPHABLENDENABLE,false);
 }
 
 //=======================================================================

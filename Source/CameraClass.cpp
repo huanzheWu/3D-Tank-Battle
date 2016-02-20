@@ -1,27 +1,23 @@
-//==========================================================================
-//
-//==========================================================================
+#include"CameraClass.h"                                    
 
-#include"CameraClass.h"    
-//构造函数
 CamerClass::CamerClass()
 {
 	cameratype = air;
-	position   = D3DXVECTOR3(0.0f, 0.0f, 1000.0f);
-	right = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
-	up    = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	look  = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-}
-//重载默认构造函数
-CamerClass::CamerClass(CameraType cameraType)
-{
-	cameraType = cameraType;
-	position   = D3DXVECTOR3(0.0f, -50.0f, -200.0f);	
+	position   = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	right = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 	up    = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	look  = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 }
 
+CamerClass::CamerClass(CameraType cameraType)
+{
+	cameraType = cameraType;
+
+	position   = D3DXVECTOR3(0.0f, 200.0f, -480.0f);
+	right = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+	up    = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	look  = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+}
 void CamerClass::SetViewMatrix(D3DXMATRIX *view)
 {
 	//使摄像机的上分量、观察分量、右分量标准正交化
@@ -44,8 +40,6 @@ void CamerClass::SetViewMatrix(D3DXMATRIX *view)
 	(*view)(2,0)=right.z;  (*view)(2,1)=up.z;  (*view)(2,2)=look.z;  (*view)(2,3)=0.0f;
 	(*view)(3,0)=pr;	   (*view)(3,1)=pu;    (*view)(3,2)=pl;      (*view)(3,3)=1.0f;
 }
-
-
 //===============================================================================================================
 //三个旋转函数
 //===============================================================================================================
@@ -63,6 +57,7 @@ void CamerClass::roll(float angle)
 {
 	D3DXMATRIX temp;
 	D3DXMatrixRotationAxis(&temp,&look,angle);
+
 	D3DXVec3TransformCoord(&up,&up,&temp);
 	D3DXVec3TransformCoord(&right,&right,&temp);
 }
@@ -72,13 +67,11 @@ void CamerClass::yaw(float angle)
 	D3DXMatrixRotationAxis(&temp,&up,angle);
 	D3DXVec3TransformCoord(&right,&right,&temp);
 	D3DXVec3TransformCoord(&look,&look,&temp);
-
 	//D3DXVec3TransformCoord(&position,&position,&temp);
 }
 //==================================================================================================================
 //三个平移函数
 //==================================================================================================================
-
 void CamerClass::fly(float units)
 {
 	if(cameratype==air)
@@ -86,15 +79,17 @@ void CamerClass::fly(float units)
 	else if(cameratype==land)
 		position.y +=units;
 }
-
 void CamerClass::strafe(float units)
 {
 	if(cameratype==air)
+	{
 		position+=right*units;
+	}
 	else if(cameratype==land)
+	{
 		position+=D3DXVECTOR3(right.x,0.0f,right.z)*units;
+	}
 }
-
 void CamerClass::walk(float units)
 {
 	if(cameratype==air)
@@ -102,10 +97,10 @@ void CamerClass::walk(float units)
 	else if(cameratype==land)
 		position+=D3DXVECTOR3(look.x,0.0f,look.z)*units;
 }
-//=================================================================
-//四个get函数
-//=================================================================
 
+//===================================================================
+//三个get函数
+//===================================================================
 void CamerClass::getlook(D3DXVECTOR3 *Look)
 {
 	*Look=look;
@@ -114,18 +109,16 @@ void CamerClass::getright(D3DXVECTOR3 *Right)
 {
 	*Right=right;
 }
-
 void CamerClass::getup(D3DXVECTOR3 *Up)
 {
 	*Up=up;
 }
+//===============================================
 void CamerClass::getposition(D3DXVECTOR3 *Position)
 {
 	*Position=position;
 }
-//===============================================
-//两个set函数
-//===============================================
+
 
 void CamerClass::setposition(D3DXVECTOR3 *Position)
 {

@@ -7,21 +7,15 @@ EnemyTank::EnemyTank (LPDIRECT3DDEVICE9 _Device)
 {
 	Device=_Device;
 	deadline=200.0;//设定坦克的被攻击范围
-	Texdeadnum=NULL;
-	numOfDead=0;//死亡坦克数目加1
-	numOfTank=0;
 }
 bool EnemyTank::InitTank ()
 {
-	//创建ID3DCFont接口对象
-	D3DXCreateFont(Device,20,10,1000,0,true,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,DEFAULT_QUALITY,0,L"微软雅黑",&Texdeadnum);
 	InitXfile(L"M3FRVT1.x");//指定敌方坦克x文件模型
 	return true;
 }
 //============================================================
 //这个函数用来设置坦克的初始信息
 //============================================================
-
 void EnemyTank::resetTank (ENEMYTANK *etank)
 {
 	//位置随机
@@ -44,14 +38,14 @@ void EnemyTank::resetTank (ENEMYTANK *etank)
 	//一开始不发射子弹
 	etank->_launch =false;
 }
-
 void EnemyTank::addTank()
 {
 	ENEMYTANK enemytank;
 	resetTank(&enemytank);//设置新坦克的信息
 	_allenetank.push_back (enemytank);//向链表中加入新的坦克
-	numOfTank++;//坦克数目加1
 }
+
+
 
 void EnemyTank::upDate (float timeDelta)
 {
@@ -70,30 +64,38 @@ void EnemyTank::upDate (float timeDelta)
 
 			static int enble1=0;
 
-			if(i->_keeptime>i->_walktime||i->_position.z<=-5000||i->_position .z>=5000)
+			if(i->_keeptime>i->_walktime||i->_position.z<=-10000||i->_position .z>=10000)
 			{
+				if(i->_keeptime>i->_walktime)
+					enble1=1;
 				//旋转，这个旋转也需要随机方向,角度是否要随机？（暂时先定为随机试一试）
 				//旋转代码	
 				angle=d3d::GetRandomFloat (-0.25,0.25);//先随机给0.1-1（18度到PI）
 				D3DXMatrixRotationY(&(i->_rotation),D3DX_PI*angle);
 				i->_look .x=0.0f,i->_look .y =0.0f,i->_look .z=-1.0f;
 
-				if(i->_position.z<=-5000||i->_position .z>=5000)
+				if(i->_position.z<=-10000||i->_position .z>=10000)
 				{
 					i->_position.x=d3d::GetRandomFloat(-10000,10000);
-					i->_position.y =0.0f;
+					i->_position.y =00.0f;
 					i->_position.z=d3d::GetRandomFloat (4000,8000);
 				}
+
 				//改变坦克的观察向量的方向
 				D3DXVec3TransformCoord(&(i->_look),&(i->_look),&(i->_rotation));
  				i->_keeptime =0;//状态时间置零
 			}
-			if(groundobject->BCollisiontest(i->_position))//如果坦克和公告版碰撞
+
+
+			if(groundobject->BCollisiontest(i->_position)&&enble1==1)//如果坦克和公告版碰撞
 			{
 				D3DXMatrixRotationY(&(i->_rotation),D3DX_PI*angle);
 				enble1=0;	
 				D3DXVec3TransformCoord(&(i->_look),&(i->_look),&(i->_rotation));
 			}
+
+		
+
 			if(i->_unlaunchtime>i->_launchtime)
 			{
 				//发射子弹间隔时间足够长，可以发射子弹了
@@ -113,11 +115,7 @@ void EnemyTank::removedeadtank()
 	while (i!=_allenetank.end ())
 	{
 		if(i->_isalive==false)
-			{
-				numOfDead++;
-				i=_allenetank.erase (i);
-				numOfTank--;
-			}
+			i=_allenetank.erase (i);
 		else 
 			i++;
 	}
@@ -163,7 +161,7 @@ void EnemyTank::InitEbullet()
 {
 	/*三步曲之一：通过.X文件加载网格模型*/
 	D3DXLoadMeshFromX(
-		L"airplane 2.x",
+		L"airplane.x",
 		D3DXMESH_MANAGED,
 		Device,
 		&eppAdjacency,
@@ -250,8 +248,6 @@ void EnemyTank::UpDateBullet(float timeDelta)
 		i->_age +=timeDelta;
 		if(i->_age >i->_lifetime )
 			i->_alive=false;
-		if(groundobject->BTCollisiontest (i->_position))
-			i->_alive=false;
 	}
 	removedead ();//调用移除死亡子弹的函数
 }
@@ -264,7 +260,7 @@ void EnemyTank::removedead ()
 	while (i!=_Ebullet.end ())
 	{
 		if(i->_alive==false)
-			i=_Ebullet.erase(i);
+			i=_Ebullet.erase (i);
 		else 
 			i++;
 	}
@@ -299,7 +295,6 @@ void EnemyTank::RenderBullet()
 }
 //==============================================================================================
 //碰撞测试函数
-//敌方坦克和我方子弹的碰撞
 //==============================================================================================
 
 bool  EnemyTank::Collisiontest(D3DXVECTOR3 _position)
@@ -311,57 +306,14 @@ bool  EnemyTank::Collisiontest(D3DXVECTOR3 _position)
 		distance=sqrt(pow((i->_position.x-_position.x),2)+pow((i->_position.y-_position.y),2)+pow((i->_position.z-_position.z),2));
 		if(distance<deadline)
 			{
-				i->_isalive=false;
+				i->_isalive =false;
 				return true;
 			}
 	}
 	return false;
 }
-//
-//敌方子弹与我方坦克的碰撞函数
-//
-//
-int EnemyTank::EB_MTCollisiontest(D3DXVECTOR3 _position)
-{
-	double distance;
-	int num=0;
-	std::list <Ebullet>::iterator i;
-	for(i=_Ebullet.begin();i!=_Ebullet.end ();i++)
-	{
-		distance=sqrt(pow((i->_position.x-_position.x),2)+pow((i->_position.y-_position.y),2)+pow((i->_position.z-_position.z),2));
-		if(distance<100)
-			{
-				i->_alive=false;
-				num++;
-			}
-	}
-	return num;//返回有几颗子击中我方坦克
-}
 
-//=============================================================================
-//绘制死亡坦克的HUD
-//=============================================================================
 
-void EnemyTank::DrawDead ()
-{
-		 wchar_t a[101][9]=
-		{
-			{L"杀敌：0"},
-			{L"杀敌：1"},{L"杀敌：2"},{L"杀敌：3"},{L"杀敌：4"},{L"杀敌：5"},{L"杀敌：6"},{L"杀敌：7"},{L"杀敌：8"},{L"杀敌：9"},{L"杀敌：10"},
-			{L"杀敌：11"},{L"杀敌：12"},{L"杀敌：13"},{L"杀敌：14"},{L"杀敌：15"},{L"杀敌：16"},{L"杀敌：17"},{L"杀敌：18"},{L"杀敌：19"},{L"杀敌：20"},
-			{L"杀敌：21"},{L"杀敌：22"},{L"杀敌：23"},{L"杀敌：24"},{L"杀敌：25"},{L"杀敌：26"},{L"杀敌：27"},{L"杀敌：28"},{L"杀敌：29"},{L"杀敌：30"},
-			{L"杀敌：31"},{L"杀敌：32"},{L"杀敌：33"},{L"杀敌：34"},{L"杀敌：35"},{L"杀敌：36"},{L"杀敌：37"},{L"杀敌：38"},{L"杀敌：39"},{L"杀敌：40"},
-			{L"杀敌：41"},{L"杀敌：42"},{L"杀敌：43"},{L"杀敌：44"},{L"杀敌：45"},{L"杀敌：46"},{L"杀敌：47"},{L"杀敌：48"},{L"杀敌：49"},{L"杀敌：50"},
-			{L"杀敌：51"},{L"杀敌：52"},{L"杀敌：53"},{L"杀敌：54"},{L"杀敌：55"},{L"杀敌：56"},{L"杀敌：57"},{L"杀敌：58"},{L"杀敌：59"},{L"杀敌：60"},
-			{L"杀敌：61"},{L"杀敌：62"},{L"杀敌：63"},{L"杀敌：64"},{L"杀敌：65"},{L"杀敌：66"},{L"杀敌：67"},{L"杀敌：68"},{L"杀敌：69"},{L"杀敌：70"},
-			{L"杀敌：71"},{L"杀敌：72"},{L"杀敌：73"},{L"杀敌：74"},{L"杀敌：75"},{L"杀敌：76"},{L"杀敌：77"},{L"杀敌：78"},{L"杀敌：79"},{L"杀敌：80"},
-			{L"杀敌：81"},{L"杀敌：82"},{L"杀敌：83"},{L"杀敌：84"},{L"杀敌：85"},{L"杀敌：86"},{L"杀敌：87"},{L"杀敌：88"},{L"杀敌：89"},{L"杀敌：90"},
-			{L"杀敌：91"},{L"杀敌：92"},{L"杀敌：93"},{L"杀敌：94"},{L"杀敌：95"},{L"杀敌：96"},{L"杀敌：97"},{L"杀敌：98"},{L"杀敌：99"},{L"杀敌：100"},
-		};
-
-	RECT rect={700,40,800,600};
-	Texdeadnum->DrawText(NULL,a[numOfDead],-1,&rect,DT_LEFT,D3DCOLOR_XRGB(255,0,0));
-}
 
 
 EnemyTank::~EnemyTank()

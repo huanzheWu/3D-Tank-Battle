@@ -1,23 +1,13 @@
 #pragma once
 #include"d3dUtility.h"
-
-//外接体结构
-	struct BOUNDINGBOX
-	{
-		D3DXVECTOR3 vMin;
-		D3DXVECTOR3 vMax;
-	};
-
 class XFileMesh{
 public:
-	XFileMesh(){};
 	XFileMesh(LPDIRECT3DDEVICE9 _Device);
-	virtual ~XFileMesh();
+	XFileMesh();
+	~XFileMesh();
 
-	protected:
-	
-	BOUNDINGBOX BoxSphere;//外接体结构
-	LPD3DXMESH BoxMesh; //外接体的网格
+	private:
+
 	LPDIRECT3DDEVICE9 Device;
 	LPD3DXBUFFER  ppAdjacency;
 	LPD3DXBUFFER  ppMaterials;
@@ -28,7 +18,7 @@ public:
 	LPDIRECT3DTEXTURE9* g_pTextures    ; // 网格的纹理信息 
 
 	public:
-		virtual void InitXfile(LPCTSTR pFilename);//初始化网格函数
-		virtual void RenderXfile();	//渲染函数
+		void InitXfile(LPCTSTR pFilename);//初始化网格函数
+		void RenderXfile();	//渲染函数
 		
 };

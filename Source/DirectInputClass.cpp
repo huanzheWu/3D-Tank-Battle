@@ -12,31 +12,29 @@ DInputClass::DInputClass()
 	ZeroMemory(&m_MouseState, sizeof(m_MouseState));
 }
 
-
 //-----------------------------------------------------------------------------
 // 函数名：DInputClass::Init(）
 // 功能: 初始化DirectInput键盘及鼠标输入设备
 //-----------------------------------------------------------------------------
 HRESULT DInputClass::Init( HWND hWnd,HINSTANCE hInstance,DWORD keyboardCoopFlags, DWORD mouseCoopFlags )
 {
-	HRESULT hr;
 	//初始化一个IDirectInput8接口对象
-	HR(DirectInput8Create( hInstance, DIRECTINPUT_VERSION, 
-		IID_IDirectInput8,(void**)&m_pDirectInput,NULL ));
+	DirectInput8Create( hInstance, DIRECTINPUT_VERSION, 
+		IID_IDirectInput8,(void**)&m_pDirectInput,NULL );
 
 	//进行键盘设备的初始化
-	HR( m_pDirectInput->CreateDevice( GUID_SysKeyboard, &m_KeyboardDevice, NULL )); //创建设备
-	HR( m_KeyboardDevice->SetCooperativeLevel( hWnd, keyboardCoopFlags));//设置设备的协作级别
-	HR( m_KeyboardDevice->SetDataFormat( &c_dfDIKeyboard ));//设置数据格式
-	HR( m_KeyboardDevice->Acquire( ));//获取权限
-	HR( m_KeyboardDevice->Poll( ));//获取轮询
+	 m_pDirectInput->CreateDevice( GUID_SysKeyboard, &m_KeyboardDevice, NULL ); //创建设备
+	 m_KeyboardDevice->SetCooperativeLevel( hWnd, keyboardCoopFlags);//设置设备的协作级别
+	 m_KeyboardDevice->SetDataFormat( &c_dfDIKeyboard);//设置数据格式
+	 m_KeyboardDevice->Acquire( );//获取权限
+	 m_KeyboardDevice->Poll( );//获取轮询
 
 	//进行鼠标设备的初始化
-	HR( m_pDirectInput->CreateDevice( GUID_SysMouse, &m_MouseDevice, NULL ));
-	HR( m_MouseDevice->SetCooperativeLevel( hWnd,mouseCoopFlags));
-	HR( m_MouseDevice->SetDataFormat( &c_dfDIMouse ));
-	HR( m_MouseDevice->Acquire( ));
-	HR( m_KeyboardDevice->Poll( ));
+	 m_pDirectInput->CreateDevice( GUID_SysMouse, &m_MouseDevice, NULL );
+	 m_MouseDevice->SetCooperativeLevel( hWnd,mouseCoopFlags);
+	 m_MouseDevice->SetDataFormat( &c_dfDIMouse );
+	 m_MouseDevice->Acquire( );
+	 m_KeyboardDevice->Poll( );
 
 	return S_OK;
 }

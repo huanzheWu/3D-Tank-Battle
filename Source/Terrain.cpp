@@ -161,6 +161,3 @@ void Terrain::clean()
 	_ver->Release ();
 	_ind->Release ();
 }
-Terrain::~Terrain()
-{
-}

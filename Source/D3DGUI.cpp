@@ -19,6 +19,9 @@ D3DGUIClass::D3DGUIClass(LPDIRECT3DDEVICE9 device, int w, int h)
 
 	memset(&m_Background, 0, sizeof(GUICONTROL));
 }
+
+
+
 //-----------------------------------------------------------------------------
 // Name： D3DGUIClass::CreateTextFont( )
 // Desc:	 字体创建函数
@@ -102,8 +105,6 @@ bool D3DGUIClass::AddBackground(wchar_t *fileName)
 
 	return true;
 }
-
-
 //-----------------------------------------------------------------------------
 // Name： D3DGUIClass::AddStaticText( )
 // Desc:	创建静态文本控件
@@ -240,8 +241,7 @@ bool D3DGUIClass::AddButton(int id, float x, float y, wchar_t *up, wchar_t *over
 		temp = new LPDIRECT3DVERTEXBUFFER9[m_nTotalBufferNum + 1];
 		if(!temp) return false;
 
-		memcpy(temp, m_pVertexBuffer,
-			sizeof(LPDIRECT3DVERTEXBUFFER9) * m_nTotalBufferNum);
+		memcpy(temp, m_pVertexBuffer,sizeof(LPDIRECT3DVERTEXBUFFER9) * m_nTotalBufferNum);
 
 		delete[] m_pVertexBuffer;
 		m_pVertexBuffer = temp;

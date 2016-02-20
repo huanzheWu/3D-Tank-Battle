@@ -8,4 +8,5 @@ class Snow :public PSystem
 		Snow(d3d::BoundingBox *boundingBox,int numParticles);//¹¹Ôìº¯Êý
 		void update (float timeDelta);
 		void resetParticle(Attribute * attribute);
+		
 };

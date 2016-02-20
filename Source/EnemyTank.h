@@ -5,10 +5,9 @@
 #include"DirectInputClass.h"
 #include"Bullet.h"
 #include"GroundObject.h"
-#include"GameProps.h"
-class GameProps;
+
+
 //敌方坦克的子弹
-class BULLET;
 struct Ebullet
 {
 		float  _age;//年龄
@@ -18,6 +17,7 @@ struct Ebullet
 		D3DXVECTOR3 _speed;//子弹的速度（方向）
 		enum Whos{my,enemy};//谁的子弹
 };
+
 struct ENEMYTANK
 {
 	D3DXVECTOR3 _position;//坦克的位置
@@ -34,8 +34,7 @@ struct ENEMYTANK
 class EnemyTank :public XFileMesh 
 {
 
-	friend BULLET;//因为要允许子弹类来访问成员函数Collisiontest(D3DXVECTOR3 _position)；
-	friend GameProps;//把游戏道具类设为友元，因为需要游戏道具中飞机的子弹需要访问EnemyTank的碰撞函数；
+	friend BULLET;//把子弹类的更新函数设为友元，因为要允许子弹类来访问成员函数Collisiontest(D3DXVECTOR3 _position)；
 	public:
 		EnemyTank(LPDIRECT3DDEVICE9 _Device);
 		~EnemyTank();//在这里考虑析构函数怎么写，回去修改MyTank类
@@ -47,7 +46,7 @@ class EnemyTank :public XFileMesh
 		void Render();//渲染坦克
 		void upDate(float timeDelta);//更新坦克状态
 		void resetTank(ENEMYTANK *etank);//重置坦克初始状态
-		void addTank();//增加一个坦克
+		void addTank();//真假一个坦克
 		void removedeadtank();
 		//=======================================================
 		//子弹相关函数
@@ -58,18 +57,14 @@ class EnemyTank :public XFileMesh
 		void UpDateBullet(float timeDelta);	//更新子弹状态，每个子弹在reset时就要接受坦克当时的方向
 		void RenderBullet();	//渲染子弹
 		void removedead();		//移除死亡的子弹（内部调用）
-		bool Collisiontest(D3DXVECTOR3 _position);
-		int EB_MTCollisiontest(D3DXVECTOR3 _position);//敌方子弹与我方坦克的碰撞函数(返回碰了几次)
-		void DrawDead();//绘制死亡的坦克的数目
-		int getNumOfDead(){return numOfDead;};
-		int getTankNum(){return numOfTank;};//获取当前坦克数量
+
 		//
 		//碰撞函数
 		//
 		
 	private :
 		
-		int numOfTank;//坦克数量
+		bool Collisiontest(D3DXVECTOR3 _position);
 	    std::list<ENEMYTANK> _allenetank; //坦克链表
 		std::list <Ebullet> _Ebullet;//敌方坦克子弹
 		float angle;//坦克旋转的角度（随机设定）；
@@ -83,6 +78,5 @@ class EnemyTank :public XFileMesh
 		LPDIRECT3DTEXTURE9* eg_pTextures    ; // 网格的纹理信息 
 		double deadline;//死亡距离
 		D3DXMATRIX rotation;//坦克碰到围墙时要旋转
-		ID3DXFont *Texdeadnum;//2D文本接口
-		int numOfDead;//死亡的坦克的数目
+
 };

@@ -37,6 +37,7 @@ class BillBoard
 		};
 
 	public:
+
 		BillBoard(LPDIRECT3DDEVICE9 dvice);
 		~BillBoard();
 		void InitBoard(wchar_t *filename);

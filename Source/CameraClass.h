@@ -2,6 +2,7 @@
 #include<d3dx9.h>
 class CamerClass
 {
+	
 public:
 	enum CameraType{air,land};
 	CamerClass();
@@ -15,6 +16,8 @@ private:
 		CameraType  cameratype;
 
 public:
+		
+
 		//三个绕up、right、look旋转的函数
 		void pitch(float angle);
 		void roll(float angle);
@@ -32,10 +35,13 @@ public:
 		void  getup(D3DXVECTOR3 *Up);
 		void  getright(D3DXVECTOR3 *Right);
 
+
 		void getposition(D3DXVECTOR3 *P);
 		void setposition(D3DXVECTOR3 *P);
 		void setCamraType(CameraType cameraType);
+		
 		//设置观察矩阵,相当于原来的取景变换函数
 		void SetViewMatrix(D3DXMATRIX * view);
+
 };
 

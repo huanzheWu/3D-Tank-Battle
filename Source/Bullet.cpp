@@ -1,11 +1,7 @@
 #include"Bullet.h"
 #include"EnemyTank.h"
-#include"Explode.h"
 
 extern EnemyTank *enetank;
-extern Explode *explode;
-class GroundObjetc;
-
 
 BULLET::BULLET(LPDIRECT3DDEVICE9 _Device,CamerClass * camera)
 {
@@ -68,16 +64,7 @@ void BULLET::Update (float timeDelta)
 		}
 		//如果子弹击中了坦克，那么子弹也会死亡
 		if(enetank->Collisiontest(i->_position))
-		{
 			i->_alive=false;
-			//初始化一个爆炸位置
-			EXPLODEA explode;
-			explode._position=i->_position;
-			explode.sign=0;
-
-			_allbound.push_back (explode);//把产生子弹碰撞置加入爆炸位置链表
-			//在这里调用
-		}
 	}
 	removedead ();
 }
@@ -120,26 +107,5 @@ void BULLET::removedead ()
 			i=_allbuttet.erase (i);
 		else
 			i++;
-	}
-}
-
-
-void BULLET ::renderbound(D3DXMATRIX *V,float timeDelta)
-{
-	std::list <EXPLODEA>::iterator i;
-	D3DXMATRIX pos;
-	if(!_allbound.empty())
-	{
-		i=_allbound.begin ();
-		while(i!=_allbound.end ())
-		{	
-			D3DXMatrixTranslation(&pos,i->_position.x ,i->_position.y-100 ,i->_position.z);
-			Device->SetTransform (D3DTS_WORLD,&pos);
-			if(!explode->RanderExplpde(V,pos,timeDelta,&(i->sign)))
-				i=_allbound.erase (i);
-			else
-				i++;
-				
-		}
 	}
 }
